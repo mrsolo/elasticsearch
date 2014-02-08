@@ -281,6 +281,16 @@
             <optional>true</optional>
         </dependency>
         -->
+
+        <!-- java coverage -->
+        <dependency>
+          <!--  must be on the classpath  -->
+          <groupId>org.jacoco</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+          <classifier>runtime</classifier>
+          <version>0.6.5-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -358,6 +368,7 @@
                             <goal>junit4</goal>
                         </goals>
                         <configuration>
+                            <classDirectory>target/generated-classes</classDirectory>
                             <heartbeat>20</heartbeat>
                             <jvmOutputAction>pipe,warn</jvmOutputAction>
                             <leaveTemporary>true</leaveTemporary>
@@ -392,11 +403,12 @@
                                 <include>**/*Test.class</include>
                             </includes>
                             <excludes>
+                            
                                 <exclude>**/Abstract*.class</exclude>
                                 <exclude>**/*StressTest.class</exclude>
                             </excludes>
                             <argLine>
-                                ${tests.jvm.argline}
+                                ${argLine}
                             </argLine>
                             <jvmArgs>
                                 <param>-Xmx512m</param>
@@ -982,13 +994,14 @@
                                 <exclude>org/elasticsearch/plugins/PluginManager.class</exclude>
                                 <exclude>org/elasticsearch/bootstrap/Bootstrap.class</exclude>
                                 <exclude>org/elasticsearch/Version.class</exclude>
-                                <exclude>org/apache/lucene/search/XReferenceManager.class</exclude>
+                           
                                 <exclude>org/apache/lucene/search/XSearcherManager.class</exclude>
                                 <exclude>org/elasticsearch/index/percolator/stats/ShardPercolateService$RamEstimator.class</exclude>
                                 <!-- end excludes for valid system-out -->
                                 <!-- start excludes for Unsafe -->
                                 <exclude>org/elasticsearch/common/util/UnsafeUtils.class</exclude>
                                 <!-- end excludes for Unsafe -->
+                                <exclude>org/jacoco/*</exclude>
                             </excludes>
                             <bundledSignatures>
                                 <!-- This will automatically choose the right signatures based on 'maven.compiler.target': -->
@@ -1000,7 +1013,7 @@
                                 <signaturesFile>core-signatures.txt</signaturesFile>
                             </signaturesFiles>
                         </configuration>
-                        <phase>compile</phase>
+                        <phase>none</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -1019,7 +1032,7 @@
                                 <bundledSignature>jdk-deprecated</bundledSignature>
                             </bundledSignatures>
                         </configuration>
-                        <phase>test-compile</phase>
+                        <phase>none</phase>
                         <goals>
                             <goal>testCheck</goal>
                         </goals>
@@ -1109,6 +1122,40 @@
                     </execution>
                 </executions>
                 -->
+            </plugin>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.6.4.201312101107</version>
+              <executions>
+                <execution>
+                  <id>default-prepare-agent</id>
+                  <goals>
+                    <goal>prepare-agent</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>default-report</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                    <goal>report</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>default-check</id>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                  
+                </execution>
+              </executions>
+              <configuration>
+                    <excludes>
+                      <exclude>jsr166e/**</exclude>
+                      <exclude>jsr166y/**</exclude>
+                      <exclude>org/apache/lucene/**</exclude>
+                    </excludes>
+                  </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
