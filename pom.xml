@@ -1213,7 +1213,7 @@
         <id>coverage</id>
         <activation>
           <property>
-            <name>test.coverage</name>
+            <name>tests.coverage</name>
             <value>true</value>
           </property>
         </activation>
