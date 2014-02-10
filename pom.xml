@@ -281,16 +281,6 @@
             <optional>true</optional>
         </dependency>
         -->
-
-        <!-- java coverage -->
-        <dependency>
-          <!--  must be on the classpath  -->
-          <groupId>org.jacoco</groupId>
-          <artifactId>org.jacoco.agent</artifactId>
-          <classifier>runtime</classifier>
-          <version>0.6.5-SNAPSHOT</version>
-          <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -356,120 +346,7 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.carrotsearch.randomizedtesting</groupId>
-                <artifactId>junit4-maven-plugin</artifactId>
-                <version>2.0.15</version>
-                <executions>
-                    <execution>
-                        <id>tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>junit4</goal>
-                        </goals>
-                        <configuration>
-                            <classDirectory>target/generated-classes</classDirectory>
-                            <heartbeat>20</heartbeat>
-                            <jvmOutputAction>pipe,warn</jvmOutputAction>
-                            <leaveTemporary>true</leaveTemporary>
-                            <listeners>
-                                <report-ant-xml mavenExtensions="true"
-                                                dir="${project.build.directory}/surefire-reports"/>
-                                <report-text
-                                        showThrowable="true"
-                                        showStackTraces="true"
-                                        showOutput="${tests.output}"
-                                        showStatusOk="false"
-                                        showStatusError="true"
-                                        showStatusFailure="true"
-                                        showStatusIgnored="true"
-                                        showSuiteSummary="true"
-                                        timestamps="false"/>
-                                <report-execution-times file="${basedir}/.local-execution-hints.log"/>
-                            </listeners>
-                            <assertions>
-                                <enable/>
-                                <disable package="${tests.assertion.disabled}"/>
-                                <!-- pass org.elasticsearch to run without assertions -->
-                            </assertions>
-                            <parallelism>${tests.jvms}</parallelism>
-                            <balancers>
-                                <execution-times>
-                                    <fileset dir="${basedir}" includes=".local-execution-hints.log"/>
-                                </execution-times>
-                            </balancers>
-                            <includes>
-                                <include>**/*Tests.class</include>
-                                <include>**/*Test.class</include>
-                            </includes>
-                            <excludes>
-                            
-                                <exclude>**/Abstract*.class</exclude>
-                                <exclude>**/*StressTest.class</exclude>
-                            </excludes>
-                            <argLine>
-                                ${argLine}
-                            </argLine>
-                            <jvmArgs>
-                                <param>-Xmx512m</param>
-                                <param>-Xss256k</param>
-                                <param>-XX:MaxPermSize=128m</param>
-                                <param>-XX:MaxDirectMemorySize=512m</param>
-                                <param>-Des.logger.prefix=</param>
-                            </jvmArgs>
-                            <shuffleOnSlave>${tests.shuffle}</shuffleOnSlave>
-                            <sysouts>${tests.verbose}</sysouts>
-                            <seed>${tests.seed}</seed>
-                            <haltOnFailure>${tests.failfast}</haltOnFailure>
-                            <systemProperties>
-                                <java.io.tmpdir>.</java.io.tmpdir> <!-- we use '.' since this is different per JVM-->
-                                <!-- RandomizedTesting library system properties -->
-                                <tests.jvm.argline>${tests.jvm.argline}</tests.jvm.argline>
-                                <tests.appendseed>${tests.appendseed}</tests.appendseed>
-                                <tests.iters>${tests.iters}</tests.iters>
-                                <tests.maxfailures>${tests.maxfailures}</tests.maxfailures>
-                                <tests.failfast>${tests.failfast}</tests.failfast>
-                                <tests.class>${tests.class}</tests.class>
-                                <tests.method>${tests.method}</tests.method>
-                                <tests.nightly>${tests.nightly}</tests.nightly>
-                                <tests.badapples>${tests.badapples}</tests.badapples>
-                                <tests.weekly>${tests.weekly}</tests.weekly>
-                                <tests.slow>${tests.slow}</tests.slow>
-                                <tests.awaitsfix>${tests.awaitsfix}</tests.awaitsfix>
-                                <tests.slow>${tests.slow}</tests.slow>
-                                <tests.timeoutSuite>${tests.timeoutSuite}</tests.timeoutSuite>
-                                <tests.showSuccess>${tests.showSuccess}</tests.showSuccess>
-                                <tests.integration>${tests.integration}</tests.integration>
-                                <tests.cluster_seed>${tests.cluster_seed}</tests.cluster_seed>
-                                <tests.client.ratio>${tests.client.ratio}</tests.client.ratio>
-                                <tests.enable_mock_modules>${tests.enable_mock_modules}</tests.enable_mock_modules>
-                                <tests.assertion.disabled>${tests.assertion.disabled}</tests.assertion.disabled>
-                                <tests.rest>${tests.rest}</tests.rest>
-                                <tests.rest.suite>${tests.rest.suite}</tests.rest.suite>
-                                <tests.rest.spec>${tests.rest.spec}</tests.rest.spec>
-                                <tests.network>${tests.network}</tests.network>
-                                <es.node.local>${env.ES_TEST_LOCAL}</es.node.local>
-                                <es.node.mode>${es.node.mode}</es.node.mode>
-                                <es.logger.level>${es.logger.level}</es.logger.level>
-                                <tests.security.manager>${tests.security.manager}</tests.security.manager>
-                                <java.awt.headless>true</java.awt.headless>
-                                <!-- everything below is for security manager / test.policy -->
-                                <junit4.tempDir>${project.build.directory}</junit4.tempDir>
-                                <java.security.policy>${basedir}/dev-tools/tests.policy</java.security.policy>
-                            </systemProperties>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <!-- we skip surefire to work with randomized testing above -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
+            <!-- randomized testing plugin  moved to default policy -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -994,14 +871,13 @@
                                 <exclude>org/elasticsearch/plugins/PluginManager.class</exclude>
                                 <exclude>org/elasticsearch/bootstrap/Bootstrap.class</exclude>
                                 <exclude>org/elasticsearch/Version.class</exclude>
-                           
+                                <exclude>org/apache/lucene/search/XReferenceManager.class</exclude>
                                 <exclude>org/apache/lucene/search/XSearcherManager.class</exclude>
                                 <exclude>org/elasticsearch/index/percolator/stats/ShardPercolateService$RamEstimator.class</exclude>
                                 <!-- end excludes for valid system-out -->
                                 <!-- start excludes for Unsafe -->
                                 <exclude>org/elasticsearch/common/util/UnsafeUtils.class</exclude>
                                 <!-- end excludes for Unsafe -->
-                                <exclude>org/jacoco/*</exclude>
                             </excludes>
                             <bundledSignatures>
                                 <!-- This will automatically choose the right signatures based on 'maven.compiler.target': -->
@@ -1013,7 +889,7 @@
                                 <signaturesFile>core-signatures.txt</signaturesFile>
                             </signaturesFiles>
                         </configuration>
-                        <phase>none</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -1032,7 +908,7 @@
                                 <bundledSignature>jdk-deprecated</bundledSignature>
                             </bundledSignatures>
                         </configuration>
-                        <phase>none</phase>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>testCheck</goal>
                         </goals>
@@ -1123,40 +999,6 @@
                 </executions>
                 -->
             </plugin>
-            <plugin>
-              <groupId>org.jacoco</groupId>
-              <artifactId>jacoco-maven-plugin</artifactId>
-              <version>0.6.4.201312101107</version>
-              <executions>
-                <execution>
-                  <id>default-prepare-agent</id>
-                  <goals>
-                    <goal>prepare-agent</goal>
-                  </goals>
-                </execution>
-                <execution>
-                  <id>default-report</id>
-                  <phase>prepare-package</phase>
-                  <goals>
-                    <goal>report</goal>
-                  </goals>
-                </execution>
-                <execution>
-                  <id>default-check</id>
-                  <goals>
-                    <goal>check</goal>
-                  </goals>
-                  
-                </execution>
-              </executions>
-              <configuration>
-                    <excludes>
-                      <exclude>jsr166e/**</exclude>
-                      <exclude>jsr166y/**</exclude>
-                      <exclude>org/apache/lucene/**</exclude>
-                    </excludes>
-                  </configuration>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -1240,4 +1082,295 @@
             </plugins>
         </pluginManagement>
     </build>
+    <profiles>
+
+      <!-- default profile, with randomized testing -->
+      <profile>
+        <id>default</id>
+        <activation>
+          <activeByDefault>true</activeByDefault>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>com.carrotsearch.randomizedtesting</groupId>
+              <artifactId>junit4-maven-plugin</artifactId>
+              <version>2.0.15</version>
+              <executions>
+                <execution>
+                  <id>tests</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>junit4</goal>
+                  </goals>
+                  <configuration>
+                    <heartbeat>20</heartbeat>
+                    <jvmOutputAction>pipe,warn</jvmOutputAction>
+                    <leaveTemporary>true</leaveTemporary>
+                    <listeners>
+                      <report-ant-xml mavenExtensions="true"
+                                      dir="${project.build.directory}/surefire-reports"/>
+                      <report-text
+                          showThrowable="true"
+                          showStackTraces="true"
+                          showOutput="${tests.output}"
+                          showStatusOk="false"
+                          showStatusError="true"
+                          showStatusFailure="true"
+                          showStatusIgnored="true"
+                          showSuteSummary="true"
+                          timestamps="false"/>
+                      <report-execution-times file="${basedir}/.local-execution-hints.log"/>
+                    </listeners>
+                    <assertions>
+                      <enable/>
+                      <disable package="${tests.assertion.disabled}"/>
+                      <!-- pass org.elasticsearch to run without assertions -->
+                    </assertions>
+                    <parallelism>${tests.jvms}</parallelism>
+                    <balancers>
+                      <execution-times>
+                        <fileset dir="${basedir}" includes=".local-execution-hints.log"/>
+                      </execution-times>
+                    </balancers>
+                    <includes>
+                      <include>**/*Tests.class</include>
+                      <include>**/*Test.class</include>
+                    </includes>
+                    <excludes>
+                      <exclude>**/Abstract*.class</exclude>
+                      <exclude>**/*StressTest.class</exclude>
+                    </excludes>
+                    <argLine>
+                      ${tests.jvm.argline}
+                    </argLine>
+                    <jvmArgs>
+                      <param>-Xmx512m</param>
+                      <param>-Xss256k</param>
+                      <param>-XX:MaxPermSize=128m</param>
+                      <param>-XX:MaxDirectMemorySize=512m</param>
+                      <param>-Des.logger.prefix=</param>
+                    </jvmArgs>
+                    <shuffleOnSlave>${tests.shuffle}</shuffleOnSlave>
+                    <sysouts>${tests.verbose}</sysouts>
+                    <seed>${tests.seed}</seed>
+                    <haltOnFailure>${tests.failfast}</haltOnFailure>
+                    <systemProperties>
+                      <java.io.tmpdir>.</java.io.tmpdir> <!-- we use '.' since this is different per JVM-->
+                      <!-- RandomizedTesting library system properties -->
+                      <tests.jvm.argline>${tests.jvm.argline}</tests.jvm.argline>
+                      <tests.appendseed>${tests.appendseed}</tests.appendseed>
+                      <tests.iters>${tests.iters}</tests.iters>
+                      <tests.maxfailures>${tests.maxfailures}</tests.maxfailures>
+                      <tests.failfast>${tests.failfast}</tests.failfast>
+                      <tests.class>${tests.class}</tests.class>
+                      <tests.method>${tests.method}</tests.method>
+                      <tests.nightly>${tests.nightly}</tests.nightly>
+                      <tests.badapples>${tests.badapples}</tests.badapples>
+                      <tests.weekly>${tests.weekly}</tests.weekly>
+                      <tests.slow>${tests.slow}</tests.slow>
+                      <tests.awaitsfix>${tests.awaitsfix}</tests.awaitsfix>
+                      <tests.slow>${tests.slow}</tests.slow>
+                      <tests.timeoutSuite>${tests.timeoutSuite}</tests.timeoutSuite>
+                      <tests.showSuccess>${tests.showSuccess}</tests.showSuccess>
+                      <tests.integration>${tests.integration}</tests.integration>
+                      <tests.cluster_seed>${tests.cluster_seed}</tests.cluster_seed>
+                      <tests.client.ratio>${tests.client.ratio}</tests.client.ratio>
+                      <tests.enable_mock_modules>${tests.enable_mock_modules}</tests.enable_mock_modules>
+                      <tests.assertion.disabled>${tests.assertion.disabled}</tests.assertion.disabled>
+                      <tests.rest>${tests.rest}</tests.rest>
+                      <tests.rest.suite>${tests.rest.suite}</tests.rest.suite>
+                      <tests.rest.spec>${tests.rest.spec}</tests.rest.spec>
+                      <tests.network>${tests.network}</tests.network>
+                      <es.node.local>${env.ES_TEST_LOCAL}</es.node.local>
+                      <es.node.mode>${es.node.mode}</es.node.mode>
+                      <es.logger.level>${es.logger.level}</es.logger.level>
+                      <tests.security.manager>${tests.security.manager}</tests.security.manager>
+                      <java.awt.headless>true</java.awt.headless>
+                      <!-- everything below is for security manager / test.policy -->
+                      <junit4.tempDir>${project.build.directory}</junit4.tempDir>
+                      <java.security.policy>${basedir}/dev-tools/tests.policy</java.security.policy>
+                    </systemProperties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <!-- we skip surefire to work with randomized testing defined in policies section -->
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>2.16</version>
+              <configuration>
+                <skipTests>true</skipTests>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+
+      <!-- profile for code coverage -->
+      <profile>
+        <id>coverage</id>
+        <dependencies>
+          <dependency>
+            <!--  must be on the classpath  -->
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <classifier>runtime</classifier>
+            <version>0.6.5-SNAPSHOT</version>
+            <scope>test</scope>
+          </dependency>
+        </dependencies>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>com.carrotsearch.randomizedtesting</groupId>
+              <artifactId>junit4-maven-plugin</artifactId>
+              <version>2.0.15</version>
+              <executions>
+                <execution>
+                  <id>tests</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>junit4</goal>
+                  </goals>
+                  <configuration>
+                    <heartbeat>20</heartbeat>
+                    <jvmOutputAction>pipe,warn</jvmOutputAction>
+                    <leaveTemporary>true</leaveTemporary>
+                    <listeners>
+                      <report-ant-xml mavenExtensions="true"
+                                      dir="${project.build.directory}/surefire-reports"/>
+                      <report-text
+                          showThrowable="true"
+                          showStackTraces="true"
+                          showOutput="${tests.output}"
+                          showStatusOk="false"
+                          showStatusError="true"
+                          showStatusFailure="true"
+                          showStatusIgnored="true"
+                          showSuiteSummary="true"
+                          timestamps="false"/>
+                      <report-execution-times file="${basedir}/.local-execution-hints.log"/>
+                    </listeners>
+                    <assertions>
+                      <enable/>
+                      <disable package="${tests.assertion.disabled}"/>
+                      <!-- pass org.elasticsearch to run without assertions -->
+                    </assertions>
+                    <parallelism>${tests.jvms}</parallelism>
+                    <balancers>
+                      <execution-times>
+                        <fileset dir="${basedir}" includes=".local-execution-hints.log"/>
+                      </execution-times>
+                    </balancers>
+                    <includes>
+                      <include>**/*Tests.class</include>
+                      <include>**/*Test.class</include>
+                    </includes>
+                    <excludes>
+                      <exclude>**/Abstract*.class</exclude>
+                      <exclude>**/*StressTest.class</exclude>
+                    </excludes>
+                    <!-- pass instrumented class setting -->
+                    <argLine>
+                      "${argLine}"
+                    </argLine>
+                    <jvmArgs>
+                      <param>-Xmx512m</param>
+                      <param>-Xss256k</param>
+                      <param>-XX:MaxPermSize=128m</param>
+                      <param>-XX:MaxDirectMemorySize=512m</param>
+                      <param>-Des.logger.prefix=</param>
+                    </jvmArgs>
+                    <shuffleOnSlave>${tests.shuffle}</shuffleOnSlave>
+                    <sysouts>${tests.verbose}</sysouts>
+                    <seed>${tests.seed}</seed>
+                    <haltOnFailure>${tests.failfast}</haltOnFailure>
+                    <systemProperties>
+                      <java.io.tmpdir>.</java.io.tmpdir> <!-- we use '.' since this is different per JVM-->
+                      <!-- RandomizedTesting library system properties -->
+                      <tests.appendseed>${tests.appendseed}</tests.appendseed>
+                      <tests.iters>${tests.iters}</tests.iters>
+                      <tests.maxfailures>${tests.maxfailures}</tests.maxfailures>
+                      <tests.failfast>${tests.failfast}</tests.failfast>
+                      <tests.class>${tests.class}</tests.class>
+                      <tests.method>${tests.method}</tests.method>
+                      <tests.nightly>${tests.nightly}</tests.nightly>
+                      <tests.badapples>${tests.badapples}</tests.badapples>
+                      <tests.weekly>${tests.weekly}</tests.weekly>
+                      <tests.slow>${tests.slow}</tests.slow>
+                      <tests.awaitsfix>${tests.awaitsfix}</tests.awaitsfix>
+                      <tests.slow>${tests.slow}</tests.slow>
+                      <tests.timeoutSuite>${tests.timeoutSuite}</tests.timeoutSuite>
+                      <tests.showSuccess>${tests.showSuccess}</tests.showSuccess>
+                      <tests.integration>${tests.integration}</tests.integration>
+                      <tests.cluster_seed>${tests.cluster_seed}</tests.cluster_seed>
+                      <tests.client.ratio>${tests.client.ratio}</tests.client.ratio>
+                      <tests.enable_mock_modules>${tests.enable_mock_modules}</tests.enable_mock_modules>
+                      <tests.assertion.disabled>${tests.assertion.disabled}</tests.assertion.disabled>
+                      <tests.rest>${tests.rest}</tests.rest>
+                      <tests.rest.suite>${tests.rest.suite}</tests.rest.suite>
+                      <tests.rest.spec>${tests.rest.spec}</tests.rest.spec>
+                      <tests.network>${tests.network}</tests.network>
+                      <es.node.local>${env.ES_TEST_LOCAL}</es.node.local>
+                      <es.node.mode>${es.node.mode}</es.node.mode>
+                      <es.logger.level>${es.logger.level}</es.logger.level>
+                      <tests.security.manager>${tests.security.manager}</tests.security.manager>
+                      <java.awt.headless>true</java.awt.headless>
+                      <!-- everything below is for security manager / test.policy -->
+                      <junit4.tempDir>${project.build.directory}</junit4.tempDir>
+                      <java.security.policy>${basedir}/dev-tools/tests.policy</java.security.policy>
+                    </systemProperties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <!-- we skip surefire to work with randomized testing -->
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>2.16</version>
+              <configuration>
+                <skipTests>true</skipTests>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.6.4.201312101107</version>
+              <executions>
+                <execution>
+                  <id>default-prepare-agent</id>
+                  <goals>
+                    <goal>prepare-agent</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>default-report</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                    <goal>report</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>default-check</id>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                  
+                </execution>
+              </executions>
+              <configuration>
+                <excludes>
+                  <exclude>jsr166e/**</exclude>
+                  <exclude>jsr166y/**</exclude>
+                  <exclude>org/apache/lucene/**</exclude>
+                </excludes>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
 </project>
