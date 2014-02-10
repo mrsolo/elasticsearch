@@ -1211,6 +1211,12 @@
       <!-- profile for code coverage -->
       <profile>
         <id>coverage</id>
+        <activation>
+          <property>
+            <name>test.coverage</name>
+            <value>true</value>
+          </property>
+        </activation>
         <dependencies>
           <dependency>
             <!--  must be on the classpath  -->
