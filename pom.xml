@@ -1363,8 +1363,7 @@
                   <id>default-check</id>
                   <goals>
                     <goal>check</goal>
-                  </goals>
-                  
+                  </goals>                  
                 </execution>
               </executions>
               <configuration>
